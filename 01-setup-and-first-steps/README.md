@@ -357,7 +357,7 @@ copilot --allow-all -p "Review @myfile.py for issues"
 
 ## Essential Slash Commands
 
-These commands work in interactive mode. **Start with just these four** - they cover 90% of daily use:
+These commands work in interactive mode. **Start with just these six** - they cover 90% of daily use:
 
 | Command | What It Does | When to Use |
 |---------|--------------|-------------|
@@ -375,7 +375,7 @@ That's it for getting started! As you become comfortable, you can explore additi
 <details>
 <summary>📚 <strong>Additional Commands</strong> (click to expand)</summary>
 
-> 💡 The five commands above cover a lot of what you'll do on a daily use. This reference is here for when you're ready to explore more.
+> 💡 The essential commands above cover a lot of what you'll do on a daily use. This reference is here for when you're ready to explore more.
 
 ### Agent Environment
 
