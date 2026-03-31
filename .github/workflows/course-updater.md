@@ -16,7 +16,7 @@ safe-outputs:
   create-pull-request:
     labels: [automated-update, copilot-cli-updates]
     title-prefix: "[bot] "
-    base-branch: staged
+    base-branch: main
 ---
 
 # Check for Copilot CLI Updates
@@ -57,10 +57,10 @@ If the new information can be added to existing chapter(s), edit those chapters 
 
 ## Step 4 — Open a pull request
 
-Create a pull request with your changes, using the `staged` branch as the base branch. The PR title should summarize what was updated (e.g., "Add /plan command documentation"). The PR body should list:
+Create a pull request with your changes, using the `main` branch as the base branch. The PR title should summarize what was updated (e.g., "Add /plan command documentation"). The PR body should list:
 
 1. What new features or changes were found
 2. What sections of the course were updated
 3. Links to the source announcements
 
-The PR should target the `staged` branch and include the labels `automated-update` and `copilot-cli-updates`.
+The PR should target the `main` branch and include the labels `automated-update` and `copilot-cli-updates`.
