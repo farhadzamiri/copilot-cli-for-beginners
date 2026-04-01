@@ -123,7 +123,7 @@ For consistent reviews across your team, create a shared configuration:
 
 ## Alternative: PR Review Bot
 
-For more sophisticated review workflows, consider using the Copilot cloud agent:
+For more sophisticated review workflows, consider using the GitHub Copilot cloud agent:
 
 ```yaml
 # .github/workflows/copilot-agent-review.yml
