@@ -1,4 +1,4 @@
-def print_menu():
+def print_menu() -> None:
     print("\n📚 Book Collection App")
     print("1. Add a book")
     print("2. List books")
@@ -8,24 +8,40 @@ def print_menu():
 
 
 def get_user_choice() -> str:
-    return input("Choose an option (1-5): ").strip()
+    while True:
+        choice = input("Choose an option (1-5): ").strip()
+        if choice in ('1', '2', '3', '4', '5'):
+            return choice
+        print("Invalid choice. Please enter a number between 1 and 5.")
 
 
-def get_book_details():
-    title = input("Enter book title: ").strip()
-    author = input("Enter author: ").strip()
+def get_book_details() -> tuple[str, str, int]:
+    while True:
+        title = input("Enter book title: ").strip()
+        if title:
+            break
+        print("Title cannot be empty. Please try again.")
 
-    year_input = input("Enter publication year: ").strip()
-    try:
-        year = int(year_input)
-    except ValueError:
-        print("Invalid year. Defaulting to 0.")
-        year = 0
+    while True:
+        author = input("Enter author: ").strip()
+        if author:
+            break
+        print("Author cannot be empty. Please try again.")
+
+    while True:
+        year_input = input("Enter publication year: ").strip()
+        try:
+            year = int(year_input)
+            if 1000 <= year <= 2100:
+                break
+            print("Year should be between 1000 and 2100. Please try again.")
+        except ValueError:
+            print("Invalid year format. Please enter a valid number.")
 
     return title, author, year
 
 
-def print_books(books):
+def print_books(books: list) -> None:
     if not books:
         print("No books in your collection.")
         return

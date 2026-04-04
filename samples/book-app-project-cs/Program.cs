@@ -75,6 +75,76 @@ void HandleFind()
     ShowBooks(books);
 }
 
+void HandleSearch()
+{
+    Console.WriteLine("\nSearch Books by Title\n");
+
+    Console.Write("Search term: ");
+    var searchTerm = Console.ReadLine()?.Trim() ?? "";
+    
+    if (string.IsNullOrWhiteSpace(searchTerm))
+    {
+        Console.WriteLine("\nError: Please enter a search term.\n");
+        return;
+    }
+
+    var books = collection.SearchByTitle(searchTerm);
+    ShowBooks(books);
+}
+
+void HandleFilter()
+{
+    Console.WriteLine("\nFilter Books\n");
+
+    // Read status filter
+    Console.Write("Filter by read status (read/unread/all) [all]: ");
+    var statusInput = Console.ReadLine()?.Trim().ToLower() ?? "all";
+    bool? readStatus = statusInput switch
+    {
+        "read" => true,
+        "unread" => false,
+        "all" => null,
+        _ => null
+    };
+
+    // Year range filter
+    int? startYear = null;
+    int? endYear = null;
+    Console.Write("Filter by year range? (yes/no) [no]: ");
+    var yearFilterInput = Console.ReadLine()?.Trim().ToLower() ?? "no";
+    if (yearFilterInput == "yes" || yearFilterInput == "y")
+    {
+        Console.Write("Start year: ");
+        if (int.TryParse(Console.ReadLine()?.Trim() ?? "", out var start))
+        {
+            startYear = start;
+        }
+
+        Console.Write("End year: ");
+        if (int.TryParse(Console.ReadLine()?.Trim() ?? "", out var end))
+        {
+            endYear = end;
+        }
+
+        if (startYear.HasValue && endYear.HasValue && startYear > endYear)
+        {
+            Console.WriteLine("\nError: Start year cannot be greater than end year.\n");
+            return;
+        }
+    }
+
+    // Author filter
+    Console.Write("Filter by author (optional): ");
+    var authorTerm = Console.ReadLine()?.Trim() ?? "";
+    if (string.IsNullOrWhiteSpace(authorTerm))
+    {
+        authorTerm = null;
+    }
+
+    var books = collection.ApplyFilters(readStatus, startYear, endYear, authorTerm);
+    ShowBooks(books);
+}
+
 void ShowHelp()
 {
     Console.WriteLine("""
@@ -86,6 +156,8 @@ void ShowHelp()
       add      - Add a new book
       remove   - Remove a book by title
       find     - Find books by author
+      search   - Search books by title
+      filter   - Filter books by status, year, and/or author
       help     - Show this help message
     """);
 }
@@ -111,6 +183,12 @@ switch (command)
         break;
     case "find":
         HandleFind();
+        break;
+    case "search":
+        HandleSearch();
+        break;
+    case "filter":
+        HandleFilter();
         break;
     case "help":
         ShowHelp();

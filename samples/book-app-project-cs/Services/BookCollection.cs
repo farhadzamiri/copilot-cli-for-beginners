@@ -85,4 +85,52 @@ public class BookCollection
             .Where(b => b.Author.Equals(author, StringComparison.OrdinalIgnoreCase))
             .ToList();
     }
+
+    public List<Book> SearchByTitle(string searchTerm)
+    {
+        return _books
+            .Where(b => b.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    public List<Book> FilterByReadStatus(bool isRead)
+    {
+        return _books.Where(b => b.Read == isRead).ToList();
+    }
+
+    public List<Book> FilterByYearRange(int startYear, int endYear)
+    {
+        return _books
+            .Where(b => b.Year >= startYear && b.Year <= endYear)
+            .ToList();
+    }
+
+    public List<Book> FilterByAuthorPartial(string authorTerm)
+    {
+        return _books
+            .Where(b => b.Author.Contains(authorTerm, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    public List<Book> ApplyFilters(bool? readStatus = null, int? startYear = null, int? endYear = null, string? authorTerm = null)
+    {
+        var results = _books.AsEnumerable();
+
+        if (readStatus.HasValue)
+        {
+            results = results.Where(b => b.Read == readStatus.Value);
+        }
+
+        if (startYear.HasValue && endYear.HasValue)
+        {
+            results = results.Where(b => b.Year >= startYear.Value && b.Year <= endYear.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(authorTerm))
+        {
+            results = results.Where(b => b.Author.Contains(authorTerm, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return results.ToList();
+    }
 }
