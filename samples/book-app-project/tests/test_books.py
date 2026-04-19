@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
 import books
-from books import BookCollection, Review
+from books import BookCollection, Review, Book
 
 
 @pytest.fixture(autouse=True)
@@ -129,3 +129,54 @@ def test_data_persistence():
     assert len(reviews) == 1
     assert reviews[0].rating == 5
     assert reviews[0].text == "Persisted!"
+
+
+# Unread books tests
+def test_get_unread_books_returns_only_unread():
+    collection = BookCollection()
+    collection.books = [
+        Book(title="Read Book", author="Author A", year=2000, read=True),
+        Book(title="Unread Book", author="Author B", year=2001, read=False),
+        Book(title="Also Unread", author="Author C", year=2002, read=False),
+    ]
+    unread = collection.get_unread_books()
+    assert [b.title for b in unread] == ["Unread Book", "Also Unread"]
+
+
+def test_get_unread_books_empty_when_all_read():
+    collection = BookCollection()
+    collection.books = [Book(title="Only Read", author="X", year=1999, read=True)]
+    assert collection.get_unread_books() == []
+
+
+def test_get_unread_books_returns_all_when_none_read():
+    collection = BookCollection()
+    collection.books = [
+        Book(title="A", author="X", year=2010, read=False),
+        Book(title="B", author="Y", year=2011, read=False),
+    ]
+    assert [b.title for b in collection.get_unread_books()] == ["A", "B"]
+
+
+def test_get_unread_books_handles_no_books():
+    collection = BookCollection()
+    collection.books = []
+    assert collection.get_unread_books() == []
+
+
+def test_handle_list_unread_calls_printer(monkeypatch):
+    import book_app
+
+    recorded = {}
+    def fake_printer(books, get_avg):
+        recorded["titles"] = [b.title for b in books]
+
+    monkeypatch.setattr(book_app, "print_books_with_ratings", fake_printer)
+    book_app.collection = BookCollection()
+    book_app.collection.books = [
+        Book(title="Un", author="A", year=1, read=False),
+        Book(title="Rd", author="B", year=2, read=True),
+    ]
+
+    book_app.handle_list_unread()
+    assert recorded["titles"] == ["Un"]

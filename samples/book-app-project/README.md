@@ -33,6 +33,7 @@ You can rate books, leave reviews, and see average ratings.
 
 ```bash
 python book_app.py list
+python book_app.py list-unread
 python book_app.py add
 python book_app.py find
 python book_app.py remove

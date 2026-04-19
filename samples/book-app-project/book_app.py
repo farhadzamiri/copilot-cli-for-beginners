@@ -7,12 +7,18 @@ from utils import format_rating, print_books_with_ratings, print_books_by_author
 collection = BookCollection()
 
 
-def handle_list():
+def handle_list() -> None:
     books = collection.list_books()
     print_books_with_ratings(books, collection.get_average_rating)
 
 
-def handle_add():
+def handle_list_unread() -> None:
+    """Show only books that are not marked as read."""
+    books = collection.get_unread_books()
+    print_books_with_ratings(books, collection.get_average_rating)
+
+
+def handle_add() -> None:
     print("\nAdd a New Book\n")
 
     title = input("Title: ").strip()
@@ -27,7 +33,7 @@ def handle_add():
         print(f"\nError: {e}\n")
 
 
-def handle_remove():
+def handle_remove() -> None:
     print("\nRemove a Book\n")
 
     title = input("Enter the title of the book to remove: ").strip()
@@ -36,7 +42,7 @@ def handle_remove():
     print("\nBook removed if it existed.\n")
 
 
-def handle_find():
+def handle_find() -> None:
     print("\nFind Books by Author\n")
 
     author = input("Author name: ").strip()
@@ -44,7 +50,7 @@ def handle_find():
     print_books_by_author(books, author, collection.get_average_rating)
 
 
-def handle_mark_read():
+def handle_mark_read() -> None:
     if len(sys.argv) < 3:
         print("\nError: Please provide a book title.\n")
         print("Usage: python book_app.py mark-read \"Book Title\"\n")
@@ -57,7 +63,7 @@ def handle_mark_read():
         print(f"\nBook '{title}' not found.\n")
 
 
-def handle_rate():
+def handle_rate() -> None:
     if len(sys.argv) < 4:
         print("\nError: Please provide a book title and rating.\n")
         print("Usage: python book_app.py rate \"Book Title\" <1-5> [optional review text]\n")
@@ -81,7 +87,7 @@ def handle_rate():
         print(f"\nError: {e}\n")
 
 
-def handle_view_reviews():
+def handle_view_reviews() -> None:
     if len(sys.argv) < 3:
         print("\nError: Please provide a book title.\n")
         print("Usage: python book_app.py view-reviews \"Book Title\"\n")
@@ -93,22 +99,25 @@ def handle_view_reviews():
     print_reviews(title, reviews, avg_rating)
 
 
-def handle_list_reviews():
+def handle_list_reviews() -> None:
     books_with_reviews = [b for b in collection.list_books() if b.reviews]
     print_books_by_rating(books_with_reviews, collection.get_average_rating)
 
 
-def show_help():
+def show_help() -> None:
     print("""
+Usage: python book_app.py <command> [args]
+
 Book Collection Helper
 
 Commands:
   list           - Show all books
+  list-unread    - Show only unread books
   add            - Add a new book
   remove         - Remove a book by title
   find           - Find books by author
-  mark-read      - Mark a book as read
-  rate           - Add a rating and optional review to a book
+  mark-read      - Mark a book as read (usage: python book_app.py mark-read "Book Title")
+  rate           - Add a rating and optional review to a book (usage: python book_app.py rate "Book Title" <1-5> [review text])
   view-reviews   - View all reviews for a book
   list-reviews   - Show all books sorted by average rating
   help           - Show this help message
@@ -118,6 +127,7 @@ Commands:
 # Command dispatch table: maps command names to handler functions
 COMMANDS = {
     "list": handle_list,
+    "list-unread": handle_list_unread,
     "add": handle_add,
     "remove": handle_remove,
     "find": handle_find,
@@ -129,7 +139,7 @@ COMMANDS = {
 }
 
 
-def main():
+def main() -> None:
     if len(sys.argv) < 2:
         show_help()
         return
