@@ -1,37 +1,15 @@
 import sys
 from books import BookCollection
+from utils import format_rating, print_books_with_ratings, print_books_by_author, print_reviews, print_books_by_rating
 
 
 # Global collection instance
 collection = BookCollection()
 
 
-def format_rating(avg_rating: float) -> str:
-    """Format average rating as a string."""
-    if avg_rating == 0:
-        return ""
-    return f" [★ {avg_rating:.1f}/5.0]"
-
-
-def show_books(books):
-    """Display books in a user-friendly format."""
-    if not books:
-        print("No books found.")
-        return
-
-    print("\nYour Book Collection:\n")
-
-    for index, book in enumerate(books, start=1):
-        status = "✓" if book.read else " "
-        rating_str = format_rating(collection.get_average_rating(book.title))
-        print(f"{index}. [{status}] {book.title} by {book.author} ({book.year}){rating_str}")
-
-    print()
-
-
 def handle_list():
     books = collection.list_books()
-    show_books(books)
+    print_books_with_ratings(books, collection.get_average_rating)
 
 
 def handle_add():
@@ -63,19 +41,7 @@ def handle_find():
 
     author = input("Author name: ").strip()
     books = collection.find_by_author(author)
-
-    if not books:
-        print("No books found.")
-        return
-
-    print(f"\nBooks by {author}:\n")
-    for index, book in enumerate(books, start=1):
-        rating_str = format_rating(collection.get_average_rating(book.title))
-        review_count = len(book.reviews)
-        reviews_text = f" ({review_count} review{'s' if review_count != 1 else ''})" if review_count > 0 else ""
-        print(f"{index}. {book.title} ({book.year}){rating_str}{reviews_text}")
-
-    print()
+    print_books_by_author(books, author, collection.get_average_rating)
 
 
 def handle_mark_read():
@@ -123,39 +89,13 @@ def handle_view_reviews():
 
     title = sys.argv[2]
     reviews = collection.get_reviews(title)
-
-    if not reviews:
-        print(f"\nNo reviews for '{title}'.\n")
-        return
-
     avg_rating = collection.get_average_rating(title)
-    print(f"\nReviews for '{title}' (Average: {avg_rating:.1f}/5.0)\n")
-
-    for index, review in enumerate(reviews, start=1):
-        print(f"{index}. Rating: {review.rating}/5")
-        if review.text:
-            print(f"   Review: {review.text}")
-        print(f"   Added: {review.timestamp}\n")
+    print_reviews(title, reviews, avg_rating)
 
 
 def handle_list_reviews():
     books_with_reviews = [b for b in collection.list_books() if b.reviews]
-
-    if not books_with_reviews:
-        print("\nNo books have been rated yet.\n")
-        return
-
-    sorted_books = sorted(books_with_reviews, 
-                          key=lambda b: collection.get_average_rating(b.title), 
-                          reverse=True)
-
-    print("\nBooks by Average Rating:\n")
-    for index, book in enumerate(sorted_books, start=1):
-        avg_rating = collection.get_average_rating(book.title)
-        review_count = len(book.reviews)
-        print(f"{index}. [{avg_rating:.1f}/5.0] {book.title} by {book.author} ({review_count} review{'s' if review_count != 1 else ''})")
-
-    print()
+    print_books_by_rating(books_with_reviews, collection.get_average_rating)
 
 
 def show_help():
@@ -175,31 +115,31 @@ Commands:
 """)
 
 
+# Command dispatch table: maps command names to handler functions
+COMMANDS = {
+    "list": handle_list,
+    "add": handle_add,
+    "remove": handle_remove,
+    "find": handle_find,
+    "mark-read": handle_mark_read,
+    "rate": handle_rate,
+    "view-reviews": handle_view_reviews,
+    "list-reviews": handle_list_reviews,
+    "help": show_help,
+}
+
+
 def main():
     if len(sys.argv) < 2:
         show_help()
         return
 
     command = sys.argv[1].lower()
-
-    if command == "list":
-        handle_list()
-    elif command == "add":
-        handle_add()
-    elif command == "remove":
-        handle_remove()
-    elif command == "find":
-        handle_find()
-    elif command == "mark-read":
-        handle_mark_read()
-    elif command == "rate":
-        handle_rate()
-    elif command == "view-reviews":
-        handle_view_reviews()
-    elif command == "list-reviews":
-        handle_list_reviews()
-    elif command == "help":
-        show_help()
+    
+    # Look up and execute the command handler, or show error if not found
+    handler = COMMANDS.get(command)
+    if handler:
+        handler()
     else:
         print("Unknown command.\n")
         show_help()
